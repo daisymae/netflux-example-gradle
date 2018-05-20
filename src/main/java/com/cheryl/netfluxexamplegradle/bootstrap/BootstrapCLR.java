@@ -40,22 +40,17 @@ public class BootstrapCLR implements CommandLineRunner {
   @Override
   public void run(String... args) throws Exception {
     // clear old data
-    movieRepository.deleteAll().block();
-    
-    /*
-     * :: in the following is a Method Reference. It is basically a reference to a single method. i.e. it refers to an existing method by name.
-     * Method reference using :: is a convenience operator.
-     * Method reference is one of the features belonging to Java lambda expressions.
-     * Method reference can be expressed using the usual lambda expression syntax format using –>
-     * In order to make it more simple :: operator can be used.
-     */
-    Flux.just("Silence of the Lambdas", "AEon Flux", "Enter the Mono<Void>", "The Fluxxinator",
+
+    /* refactor to use thenMany, which goes to the save */
+    movieRepository.deleteAll()
+            .thenMany(
+                    Flux.just("Silence of the Lambdas", "AEon Flux", "Enter the Mono<Void>", "The Fluxxinator",
         "Back to the Future", "Meet the Fluxes", "Lord of the Fluxes")
-    .map(title -> new Movie(UUID.randomUUID().toString(), title))
-    .flatMap(movieRepository::save)
-    .subscribe(null, null, () -> {
-      movieRepository.findAll().subscribe(System.out::println);
-    });
+                            .map(title -> new Movie(UUID.randomUUID().toString(), title))
+                            .flatMap(movieRepository::save))
+            .subscribe(null, null, () -> {
+              movieRepository.findAll().subscribe(System.out::println);
+            });
   }
 
 }
