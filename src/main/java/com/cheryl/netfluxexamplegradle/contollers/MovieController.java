@@ -3,12 +3,15 @@ package com.cheryl.netfluxexamplegradle.contollers;
 import com.cheryl.netfluxexamplegradle.domain.Movie;
 import com.cheryl.netfluxexamplegradle.domain.MovieEvent;
 import com.cheryl.netfluxexamplegradle.service.MovieService;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.awt.*;
 
 /**
  * author: corcutt
@@ -25,7 +28,7 @@ public class MovieController {
         this.movieService = movieService;
     }
 
-    @GetMapping(value = "/{id}/events")
+    @GetMapping(value = "/{id}/events", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     Flux<MovieEvent> streamMovieEvents(@PathVariable String id) {
         return movieService.events(id);
     }
